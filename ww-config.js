@@ -102,7 +102,7 @@ export default {
                 'optionBorder',
                 'optionBorderRadius',
                 'optionBgColor',
-                'optionBgColorFocused',
+                'optionBgColorSelected',
                 'optionBgColorHover',
                 'optionCursor',
                 'optionIcon',
@@ -2315,7 +2315,7 @@ export default {
             bindable: true,
             responsive: true,
         },
-        optionBgColor: {
+        optionBgColo: {
             label: {
                 en: 'background color',
             },
@@ -2326,9 +2326,9 @@ export default {
             bindable: true,
             responsive: true,
         },
-        optionBgColorFocused: {
+        optionBgColorSelected: {
             label: {
-                en: 'Focus background',
+                en: 'Selected background',
             },
             type: 'Color',
             defaultValue: undefined,

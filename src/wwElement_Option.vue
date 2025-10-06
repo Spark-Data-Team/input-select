@@ -85,9 +85,12 @@ export default {
 
         // Styles
         const optionStyles = computed(() => {
+            // Force la dépendance
+            const selected = isSelected.value;
+
             return {
                 padding: props.content.optionPadding,
-                'background-color': props.content.optionBgColor,
+                'background-color': selected ? props.content.optionBgColorSelected : props.content.optionBgColor,
                 color: props.content.optionFontColor,
                 'font-family': props.content.optionFontFamily,
                 'font-size': props.content.optionFontSize,
@@ -96,7 +99,6 @@ export default {
                 'border-radius': props.content.optionBorderRadius,
                 border: props.content.optionBorder,
                 '--ww-select-option-bg-color-hover': props.content.optionBgColorHover,
-                '--ww-select-option-bg-color-focused': props.content.optionBgColorFocused,
             };
         });
 
@@ -413,9 +415,6 @@ export default {
     gap: 8px;
     &:hover {
         background-color: var(--ww-select-option-bg-color-hover) !important;
-    }
-    &.focused {
-        background-color: var(--ww-select-option-bg-color-focused) !important;
     }
     &.disabled {
         cursor: not-allowed;
