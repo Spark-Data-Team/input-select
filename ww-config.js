@@ -160,6 +160,7 @@ export default {
                 'triggerTitle',
                 'placeholder',
                 'emptyStateText',
+                'createOptionPrefix',
                 'searchPlaceholder',
                 'initialState',
                 'selectType',
@@ -653,6 +654,22 @@ export default {
             },
             /* wwEditor:end */
         },
+        createOptionPrefix: {
+            label: {
+                en: 'Create option prefix',
+                fr: 'Préfixe création option',
+            },
+            type: 'Text',
+            defaultValue: {
+                en: 'Create',
+                fr: 'Créer',
+            },
+            section: 'settings',
+            states: true,
+            bindable: true,
+            responsive: true,
+            multiLang: true,
+        },
         emptyStateText: {
             label: {
                 en: 'No results text',
@@ -1006,6 +1023,7 @@ export default {
             states: true,
             bindable: true,
             responsive: true,
+            classes: true,
             /* wwEditor:start */
             bindingValidation: {
                 type: 'boolean',

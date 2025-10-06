@@ -604,7 +604,21 @@ export default {
             // Handle single select
             if (selectType.value === 'single') {
                 const option = findOptionByValue(variableValue.value);
-                return option ? formatOption(option) : null;
+                if (option) return formatOption(option);
+                if (variableValue.value !== null && variableValue.value !== undefined) {
+                    const computedValue = toValue(mappingValue) ? resolveMappingFormula(toValue(mappingValue), variableValue.value) : variableValue.value;
+                    return {
+                        value: computedValue,
+                        label: String(variableValue.value),
+                        icon: null,
+                        image: null,
+                        disabled: false,
+                        data: variableValue.value,
+                        isInOptions: false,
+                        info: 'This value is not in the defined options',
+                    };
+                }
+                return null;
             }
             // Handle multiple select
             else {

@@ -5,6 +5,7 @@
         :style="[searchStyles]"
         :class="['ww-select-search']"
         @input="handleInputChange"
+        @keydown="handleKeyDown"
         @focus="handleSearchFocus"
         @blur="handleSearchBlur"
         :placeholder="searchPlaceholder"
@@ -35,6 +36,9 @@ export default {
             '_wwSelect:useSearch',
             {}
         );
+        const searchState = inject('_wwSelect:searchState', ref(null));
+        const updateValue = inject('_wwSelect:updateValue', null);
+        const dropdownMethods = inject('_wwSelect:dropdownMethods', {});
         const searchElementRef = ref(null);
         const searchElement = computed(() => searchElementRef.value);
         const searchBy = computed(() => {
@@ -88,6 +92,18 @@ export default {
             debouncedUpdateSearch(event?.target?.value, searchBy);
         };
 
+        const handleKeyDown = event => {
+            if (event.key !== 'Enter') return;
+            const value = event?.target?.value ?? '';
+            const hasText = typeof value === 'string' && value.trim().length > 0;
+            const noMatches = !Array.isArray(searchState.value?.searchMatches) || searchState.value.searchMatches.length === 0;
+            if (!hasText || !noMatches || !updateValue) return;
+            event.preventDefault();
+            updateValue(value);
+            if (dropdownMethods?.closeDropdown) dropdownMethods.closeDropdown();
+            if (updateSearch) updateSearch({ ...searchState.value, value: '', searchMatches: [] });
+        };
+
         const handleSearchFocus = () => {
             isSearchBarFocused.value = true;
         };
@@ -112,6 +128,7 @@ export default {
         return {
             searchElementRef,
             handleInputChange,
+            handleKeyDown,
             handleSearchFocus,
             handleSearchBlur,
             searchStyles,

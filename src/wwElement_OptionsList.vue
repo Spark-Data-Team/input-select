@@ -35,9 +35,18 @@
         </wwLayoutItemContext>
     </div> -->
 
-    <div v-show="filteredOptions.length === 0 || showEmptyStateInEditor" :style="emptyStateStyle">
+    <div v-show="(filteredOptions.length === 0 && !canCreateFromSearch) || showEmptyStateInEditor" :style="emptyStateStyle">
         <span>{{ emptyStateText }}</span>
         <!-- <wwElement v-bind="content.emptyStateContainer" /> -->
+    </div>
+
+    <div
+        v-if="filteredOptions.length === 0 && canCreateFromSearch"
+        class="ww-select__create-option"
+        :style="createOptionStyle"
+        @click="handleCreateOption"
+    >
+        <span>{{ createOptionLabel }}</span>
     </div>
 </template>
 
@@ -88,6 +97,8 @@ export default {
         const rawData = inject('_wwSelect:rawData', ref([]));
         const searchState = inject('_wwSelect:searchState', ref(null));
         const { updateSearch } = inject('_wwSelect:useSearch', {});
+        const updateValue = inject('_wwSelect:updateValue', null);
+        const dropdownMethods = inject('_wwSelect:dropdownMethods', {});
         const registerOptionProperties = inject('_wwSelect:registerOptionProperties', () => {});
         const virtualScroll = computed(() => props.content.virtualScroll);
         const virtualScrollSizeDependencies = computed(() => props.content.virtualScrollSizeDependencies);
@@ -151,6 +162,19 @@ export default {
             return filtered;
         });
 
+        const canCreateFromSearch = computed(() => {
+            const value = searchState.value && searchState.value.value;
+            return typeof value === 'string' && value.trim().length > 0;
+        });
+
+        const createOptionLabel = computed(() => {
+            const prefix = wwLib.wwLang.getText(props.content.createOptionPrefix) || 'Créer';
+            const quoteLeft = props.content.createOptionQuoteLeft ?? '"';
+            const quoteRight = props.content.createOptionQuoteRight ?? '"';
+            const value = searchState.value?.value || '';
+            return `${prefix} ${quoteLeft}${value}${quoteRight}`;
+        });
+
         const dynamicScrollerItems = computed(() => {
             return filteredOptions.value.map((item, index) => {
                 // Handle primitive values properly - don't spread them as they become indexed objects
@@ -185,6 +209,27 @@ export default {
             };
         });
 
+        const createOptionStyle = computed(() => {
+            return {
+                'font-family': props.content.emptyStateFontFamily,
+                'font-size': props.content.emptyStateFontSize,
+                'font-weight': props.content.emptyStateFontWeight,
+                color: props.content.emptyStateFontColor,
+                padding: props.content.emptyStatePadding,
+                'text-align': props.content.emptyStateTextAlign,
+                width: '100%',
+                cursor: 'pointer',
+            };
+        });
+
+        const handleCreateOption = () => {
+            const value = searchState.value?.value;
+            if (!value || !updateValue) return;
+            updateValue(value);
+            if (dropdownMethods?.closeDropdown) dropdownMethods.closeDropdown();
+            if (updateSearch) updateSearch({ ...searchState.value, value: '', searchMatches: [] });
+        };
+
         // Watch
         watch(
             optionProperties,
@@ -215,6 +260,10 @@ export default {
             showEmptyStateInEditor,
             dynamicScrollerItems,
             emptyStateStyle,
+            createOptionStyle,
+            createOptionLabel,
+            canCreateFromSearch,
+            handleCreateOption,
         };
     },
 };
